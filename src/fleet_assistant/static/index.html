@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Multilingual fleet assistant portfolio demo" />
+    <title>FleetOps AI</title>
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <section class="hero">
+        <p class="eyebrow">PORTFOLIO EDITION · SYNTHETIC DATA</p>
+        <h1>Fleet operations,<br /><span>understood naturally.</span></h1>
+        <p class="intro">A safe multilingual routing demo for French, Tunisian Arabic and Arabizi.</p>
+        <div class="chips"><span>FastAPI</span><span>Redis-ready</span><span>Auditable routing</span></div>
+      </section>
+      <section class="console">
+        <header><div><strong>FleetOps Assistant</strong><small>Demo vehicles 2 and 4</small></div><span class="online">● ONLINE</span></header>
+        <div id="messages" class="messages" aria-live="polite">
+          <article class="bot">Try “Où est la voiture 4 ?”, “9addech khdem moteur karhba 2?” or “وين الكرهبة 4؟”</article>
+        </div>
+        <form id="chat-form">
+          <textarea id="message" rows="2" placeholder="Ask about a demo vehicle…" required></textarea>
+          <button type="submit">Send <span>→</span></button>
+        </form>
+        <footer><a href="/docs">OpenAPI docs</a><button id="reset" type="button">New session</button></footer>
+      </section>
+    </main>
+    <script src="/static/app.js"></script>
+  </body>
+</html>

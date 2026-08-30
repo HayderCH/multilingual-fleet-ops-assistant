@@ -1,0 +1,23 @@
+:root { color-scheme: dark; font-family: Inter, ui-sans-serif, system-ui, sans-serif; background:#07110f; color:#eef8f2; }
+* { box-sizing:border-box; }
+body { margin:0; min-height:100vh; background:radial-gradient(circle at 18% 20%,#12392f 0,transparent 35%),radial-gradient(circle at 82% 80%,#1b2935 0,transparent 35%),#07110f; }
+.shell { min-height:100vh; display:grid; grid-template-columns:minmax(280px,.9fr) minmax(360px,1.1fr); gap:6vw; align-items:center; padding:7vw; }
+.eyebrow { color:#7ee2ac; font-size:.75rem; letter-spacing:.18em; font-weight:800; }
+h1 { margin:.5rem 0 1rem; font-size:clamp(2.7rem,5vw,5.8rem); line-height:.95; letter-spacing:-.06em; }
+h1 span { color:#85e7b2; }
+.intro { max-width:34rem; color:#b8c9c1; font-size:1.08rem; line-height:1.65; }
+.chips { display:flex; flex-wrap:wrap; gap:.6rem; margin-top:2rem; }
+.chips span { padding:.55rem .8rem; border:1px solid #2b5546; border-radius:999px; color:#c5dbd1; font-size:.78rem; }
+.console { background:rgba(11,24,21,.88); border:1px solid #28463b; border-radius:1.4rem; box-shadow:0 30px 80px #0008; overflow:hidden; backdrop-filter:blur(16px); }
+.console header,.console footer { padding:1rem 1.2rem; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid #203a31; }
+.console header div { display:flex; flex-direction:column; gap:.2rem; }
+small { color:#839b91; }.online { color:#75dda4; font-size:.72rem; letter-spacing:.08em; }
+.messages { height:440px; overflow:auto; padding:1.2rem; display:flex; flex-direction:column; gap:.8rem; }
+.messages article { max-width:86%; padding:.85rem 1rem; border-radius:1rem; line-height:1.45; white-space:pre-wrap; }
+.bot { background:#183027; align-self:flex-start; }.user { background:#85e7b2; color:#07110f; align-self:flex-end; }
+.meta { color:#9db2a9; font-size:.74rem; border:1px solid #29483c; background:transparent!important; }
+form { display:flex; gap:.7rem; padding:1rem 1.2rem; border-top:1px solid #203a31; }
+textarea { flex:1; resize:none; border:1px solid #315347; border-radius:.8rem; padding:.8rem; background:#0b1916; color:#fff; font:inherit; }
+button { border:0; border-radius:.8rem; padding:.75rem 1rem; background:#85e7b2; color:#07110f; font-weight:800; cursor:pointer; }
+.console footer { border:0; border-top:1px solid #203a31; }.console footer a { color:#85e7b2; }.console footer button { background:transparent; color:#a8bdb4; padding:.3rem; }
+@media (max-width:850px) { .shell { grid-template-columns:1fr; padding:2rem 1rem; }.hero { padding:1rem; }.messages { height:380px; } }
