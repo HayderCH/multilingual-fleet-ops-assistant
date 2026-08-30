@@ -8,10 +8,10 @@ from .models import Language, RouteDecision
 
 ARABIC_RE = re.compile(r"[\u0600-\u06ff]")
 VEHICLE_RE = re.compile(
-    r"(?:vehicle|voiture|vehicule|car|van|karhba|kraheb|كرهبة|الكرهبة|سيارة|السيارة|عربية|العربية)\s*#?\s*([0-9٠-٩]+)",
+    r"(?:vehicle|voiture|vehicule|car|van|karhba|kraheb|numero|numéro|num|n°|la|le|el|l|كرهبة|الكرهبة|سيارة|السيارة|عربية|العربية|رقم)\s*#?\s*([0-9٠-٩]+)",
     re.IGNORECASE,
 )
-NUMBER_ONLY_RE = re.compile(r"^\s*([0-9٠-٩]+)\s*$")
+NUMBER_ONLY_RE = re.compile(r"^\s*#?\s*([0-9٠-٩]+)\s*$")
 
 
 @dataclass(frozen=True)

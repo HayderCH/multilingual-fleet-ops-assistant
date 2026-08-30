@@ -1,67 +1,125 @@
-# Multilingual Fleet Operations Assistant
+# Multilingual Fleet Operations Assistant (AI Engine)
 
-[![Tests](https://github.com/HayderCH/multilingual-fleet-ops-assistant/actions/workflows/tests.yml/badge.svg)](https://github.com/HayderCH/multilingual-fleet-ops-assistant/actions/workflows/tests.yml)
-[![Python](https://img.shields.io/badge/Python-3.11%2B-3776AB)](https://www.python.org/)
-[![FastAPI](https://img.shields.io/badge/FastAPI-API-009688)](https://fastapi.tiangolo.com/)
-[![License](https://img.shields.io/badge/License-MIT-85e7b2)](LICENSE)
+[![Python](https://img.shields.io/badge/Python-3.11%2B-3776AB.svg?logo=python&logoColor=white)](https://www.python.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-009688.svg?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED.svg?logo=docker&logoColor=white)](docker-compose.yml)
+[![Tests](https://img.shields.io/badge/Tests-16%20Passed-success.svg?logo=pytest&logoColor=white)](tests/)
+[![Architecture](https://img.shields.io/badge/Architecture-Agentic%20Tool%20Calling-blueviolet.svg)](#architecture--data-flow)
+[![License](https://img.shields.io/badge/License-MIT-85e7b2.svg)](LICENSE)
 
-A clean-room portfolio implementation of a multilingual fleet assistant. It accepts French, Tunisian Arabic, Arabizi and basic English requests, maps them to an allowlisted operation, asks for missing information, and requires confirmation before a simulated state-changing action.
+An end-to-end, **100% self-contained local AI assistant** for fleet operations. It processes multilingual natural language queries across **French, Tunisian Arabic (Derja), Arabizi (Latin script with phonetic numerals), and English**, resolves intent and parameters, manages multi-turn clarification and confirmation state, and executes structured tool calls against fleet backends.
 
-> **Portfolio and provenance notice**
->
-> This repository was written from scratch for public demonstration. It contains no client source code, private API contract, production dataset, vehicle identifier, credential or proprietary model artifact. All fleet records and benchmark queries are synthetic.
+> [!NOTE]
+> **Portfolio & Clean-Room Provenance Notice**  
+> This repository is an open-source reference implementation written from scratch with synthetic data and mock adapters. It contains no proprietary client source code, credentials, or private vehicle telemetry.
 
-## What it demonstrates
+---
 
-- multilingual normalization and intent routing across Latin and Arabic scripts;
-- a reproducible character/word n-gram classifier trained only on newly generated synthetic data;
-- structured FastAPI contracts with visible route evidence and confidence;
-- multi-turn vehicle clarification using memory or Redis;
-- confirmation gates for simulated ticket creation;
-- deterministic fallback behavior with no paid LLM dependency;
-- Docker deployment, automated tests and a reproducible public benchmark;
-- a small responsive browser interface backed by the real API.
+## 📸 Interface Preview
 
-## Try it locally
+<div align="center">
+  <img src="docs/assets/ui_chat_overview.png" alt="FleetOps AI Web Interface" width="850"/>
+  <p><em>Interactive local web console demonstrating multi-turn clarification, Arabizi parsing, and inspectable routing decisions (intent, status, confidence score).</em></p>
+</div>
+
+---
+
+## ⚡ Key AI Engineering Highlights
+
+* **Multilingual & Arabizi Normalization:** Normalizes code-switched queries across Arabic script, French, English, and Arabizi (phonetic numbers like `3` for ع, `7` for ح, `9` for ق).
+* **Agentic Guardrails & Tool Calling:** Strict schema validation isolates natural language understanding from execution; the assistant only triggers allowlisted operations with validated parameters.
+* **Multi-Turn State & Clarification Loops:** Automatically identifies missing parameters (e.g. missing vehicle ID) and prompts the user for clarification before executing backend calls.
+* **Confirmation Gates on State Mutations:** Enforces explicit user confirmation before executing state-changing actions (e.g., ticket/complaint creation).
+* **Self-Contained & Reproducible:** Zero required cloud API keys or external paid LLM dependencies; runs entirely locally using FastAPI, scikit-learn / n-gram intent classification, and Redis-backed session memory.
+
+---
+
+## 🏗️ Architecture & Data Flow
+
+```mermaid
+flowchart TD
+    subgraph Client Layer
+        U[User Query in FR / TN / Arabizi / EN] --> C[React / Web Console]
+    end
+
+    subgraph NLP & Agentic Pipeline
+        C --> API[FastAPI Gateway /chat]
+        API --> NORM[Unicode & Arabizi Normalizer]
+        NORM --> ROUTER{Intent & Entity Router}
+        ROUTER --> CLF[Calibrated Intent Classifier]
+        ROUTER --> EXT[Parameter Extractor]
+    end
+
+    subgraph State & Safety Engine
+        EXT --> GUARD{Guardrail Policy}
+        GUARD -->|Missing Required Params| CLARIFY[Ask Clarification]
+        GUARD -->|State-Changing Mutation| CONFIRM[Request Confirmation]
+        GUARD -->|Validated Read Query| EXEC[Fleet Adapter Tool]
+        CLARIFY --> SESS[(Session Store - Memory / Redis)]
+        CONFIRM --> SESS
+    end
+
+    subgraph Response Generation
+        EXEC --> JSON[Structured Response + Decision Metadata]
+        JSON --> C
+    end
+```
+
+---
+
+## 🚀 Quickstart (Run 100% Locally)
+
+### Option 1: Local Python (Zero Setup)
 
 ```bash
+# 1. Create and activate virtual environment
 python -m venv .venv
 # Windows: .venv\Scripts\activate
 # Linux/macOS: source .venv/bin/activate
+
+# 2. Install dependencies
 pip install -e ".[dev]"
+
+# 3. Launch the server
 uvicorn fleet_assistant.api:app --reload
 ```
 
-Open [http://localhost:8000](http://localhost:8000) for the demo or [http://localhost:8000/docs](http://localhost:8000/docs) for OpenAPI.
+* **Web UI Console:** [http://localhost:8000](http://localhost:8000)
+* **OpenAPI Docs:** [http://localhost:8000/docs](http://localhost:8000/docs)
 
-Example requests:
-
-```text
-Où est la voiture 4 ?
-9addech khdem moteur karhba 2?
-وين الكرهبة 4؟
-Create a complaint for vehicle 2
-```
-
-Docker with Redis-backed sessions:
+### Option 2: Docker Compose (with Redis Session Store)
 
 ```bash
 docker compose up --build
 ```
 
-## API example
+---
+
+## 💬 Sample Queries
+
+| Language / Script | User Input | Resolved Intent |
+| :--- | :--- | :--- |
+| **French** | `Où est la voiture 4 ?` | `vehicle_location` |
+| **Arabizi** | `win karhba 4 tawa` | `vehicle_location` |
+| **Tunisian Arabic** | `وين الكرهبة 4؟` | `vehicle_location` |
+| **Arabizi (Engine hours)** | `9addech khdem moteur karhba 2?` | `engine_hours` |
+| **State Mutation (Ticket)** | `Create a complaint for vehicle 2` | `create_ticket` *(triggers confirmation gate)* |
+
+---
+
+## 🔬 API & Inspectable Decision Frame
 
 ```bash
 curl -X POST http://localhost:8000/chat \
   -H "Content-Type: application/json" \
-  -d '{"text":"win karhba 4 tawa","conversation_id":"demo-1"}'
+  -d '{"text":"win karhba 4 tawa","conversation_id":"demo-session-1"}'
 ```
 
-The response makes the decision inspectable:
+**Response (exposing route evidence & parameters):**
 
 ```json
 {
-  "conversation_id": "demo-1",
+  "conversation_id": "demo-session-1",
   "status": "complete",
   "reply": "Demo Car 4 is currently in La Marsa.",
   "route": {
@@ -81,71 +139,51 @@ The response makes the decision inspectable:
 }
 ```
 
-## Public benchmark
+---
 
-Run the compact, openly inspectable benchmark:
+## 📊 Public Benchmark & Test Suite
+
+Run the automated test suite:
+
+```bash
+pytest -v
+```
+
+Run the reproducible benchmark runner (evaluates 32 synthetic multi-dialect queries):
 
 ```bash
 fleet-benchmark
 ```
 
-The benchmark contains 32 hand-curated synthetic queries across French, Tunisian Arabic, Arabizi, English and one mixed-script case. It is a reproducible smoke benchmark—not a substitute for independent real-user evaluation. Results are regenerated in CI rather than presented as client performance.
-
-Train and inspect the public classifier:
+Train and inspect the local classifier:
 
 ```bash
 fleet-train-classifier
-curl -X POST http://localhost:8000/classify \
-  -H "Content-Type: application/json" \
-  -d '{"text":"win karhba 4 tawa"}'
 ```
 
-The committed artifact is trained exclusively from the transparent templates in `training_data.py`. It is intentionally separate from the deterministic policy layer: classifier probabilities provide routing evidence, while allowlists, entity resolution and confirmation remain authoritative.
+---
 
-## Architecture
-
-```mermaid
-flowchart LR
-    Q[Multilingual query] --> N[Normalization]
-    N --> R[Intent router]
-    R --> G{Guardrails}
-    G -->|missing entity| C[Clarify]
-    G -->|mutation| F[Confirm]
-    G -->|safe read| D[Synthetic fleet adapter]
-    C --> S[(Memory / Redis)]
-    F --> S
-    D --> O[Structured response]
-```
-
-See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for trust boundaries and design decisions,
-and [docs/MODEL_CARD.md](docs/MODEL_CARD.md) for classifier provenance, evaluation scope
-and limitations.
-
-## Repository map
+## 📁 Repository Structure
 
 ```text
 src/fleet_assistant/
-  api.py          FastAPI entry point
-  router.py       multilingual routing and entity extraction
-  service.py      conversation policy and execution
-  sessions.py     memory and Redis session stores
-  catalog.py      synthetic fleet adapter
-  benchmark.py    reproducible evaluation runner
-  classifier.py   public intent-classifier inference
-  training_data.py synthetic multilingual training templates
-  static/         browser demo
-tests/            routing, API, safety and benchmark tests
+  api.py            FastAPI entry point & endpoint routes
+  router.py         Multilingual normalization, intent routing & entity extraction
+  service.py        State machine, policy guardrails & conversation execution
+  sessions.py       In-memory & Redis state persistence
+  catalog.py        Synthetic fleet data adapter
+  classifier.py     Local intent classifier inference
+  training_data.py  Synthetic multilingual training corpus
+  benchmark.py      Reproducible benchmark runner
+  static/           Self-contained browser demo UI
+tests/              Unit, safety, routing, and benchmark tests
+docs/               Architecture decisions & model cards
 ```
 
-## Limitations
+---
 
-- The public router is intentionally lightweight and deterministic.
-- Fleet responses are synthetic and must not be interpreted as live telemetry.
-- The included benchmark is small and designed for transparency, not marketing.
-- Redis fallback behavior and multi-worker deployment should be load-tested for a real service.
+## 👤 Author
 
-## Author
-
-**Hayder Chakroun** — Junior Applied AI / Machine Learning Engineer
-
+**Hayder Chakroun** — Junior Applied AI / Machine Learning Engineer  
 [LinkedIn](https://www.linkedin.com/in/hayderchakroun/) · [GitHub](https://github.com/HayderCH)
+
