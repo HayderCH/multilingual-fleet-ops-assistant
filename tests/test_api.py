@@ -23,6 +23,7 @@ def test_public_classifier_endpoint() -> None:
     assert response.status_code == 200
     body = response.json()
     assert body["training_data"] == "synthetic"
+    assert body["model"] == "public-char-word-ngram-logistic-v1"
     assert body["candidates"][0]["intent"] == "vehicle_location"
 
 

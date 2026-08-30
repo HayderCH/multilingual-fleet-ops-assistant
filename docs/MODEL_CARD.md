@@ -3,8 +3,9 @@
 ## Summary
 
 `public-char-word-ngram-logistic-v1` is a compact intent classifier built for this
-clean-room portfolio demonstration. It recognizes four allowlisted fleet intents:
-vehicle location, engine hours, maintenance status and ticket creation.
+clean-room portfolio demonstration. It recognizes seven allowlisted fleet intents:
+vehicle location, speed, status, trip history, engine hours, fleet listing and
+ticket creation.
 
 The classifier is deliberately paired with a deterministic policy layer. Its scores
 are supporting routing evidence; they never bypass entity checks, operation

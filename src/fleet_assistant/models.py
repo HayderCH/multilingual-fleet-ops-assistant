@@ -30,7 +30,7 @@ class ClassifierCandidate(BaseModel):
 
 class ClassifierResponse(BaseModel):
     candidates: list[ClassifierCandidate]
-    model: str = "public-char-ngram-logistic-v1"
+    model: str = "public-char-word-ngram-logistic-v1"
     training_data: str = "synthetic"
 
 
